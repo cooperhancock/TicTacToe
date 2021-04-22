@@ -1,3 +1,6 @@
+import Algorithms
+import GFGMinimax
+
 class TicTacToe:
     def __init__(self):
         self.current_player = 'X'
@@ -42,6 +45,22 @@ class TicTacToe:
                 return False
         else:
             return False
+    # make move by coordinate
+    def exactMove(self, move):
+        print(move)
+        try:
+            self.board[move[0]][move[1]] = self.current_player
+            return True
+        except:
+            print('cannot move')
+            return False
+    # checks if game board full
+    def boardFull(self):
+        for i in range(3):
+            for j in range(3):
+                if self.board[i][j]=='-':
+                    return False
+        return True
     # checks if game is done, returns winner if done, else returns ''
     def gameDone(self):
         diagonal1, diagonal2 = '',''
@@ -54,17 +73,20 @@ class TicTacToe:
             diagonal2 += self.board[2-i][i] # upward diagonal
         if diagonal1 == self.current_player*3 or diagonal2 == self.current_player*3:
             return self.current_player
-        return ''
+        if self.boardFull():
+            return 'tie'
+        else:
+            return ''
 
 # runs game, returns winner
 # supports quiet mode
 def runGame(gamers=['human','human'], mode=''):
-    validGamers = ['human']
+    validGamers = ['human','minimax','GFGminimax']
     if (not gamers[0] in validGamers) or (not gamers[1] in validGamers):
         return 'invalid game'
     winner = ''
     game = TicTacToe()
-    players = ['X','Y']
+    players = ['X','O']
     while game.gameDone() == '':
         for i in players:
             game.current_player = i
@@ -80,7 +102,14 @@ def runGame(gamers=['human','human'], mode=''):
                     except:
                         continue
                     valid = game.move(play)
-            
+            elif gamers[players.index(i)]=='GFGminimax':
+                print('minimax is choosing...')
+                move = GFGMinimax.findBestMove(game.board)
+                print(game.exactMove(move))
+            elif gamers[players.index(i)]=='minimax':
+                print('minimax is choosing...')
+                move = Algorithms.findBestMove(game)
+                print(game.move(move))
             if game.gameDone()!='':
                 if mode!= 'quiet':
                     winner = game.gameDone()
@@ -90,6 +119,5 @@ def runGame(gamers=['human','human'], mode=''):
     return winner
 
 if __name__ == '__main__':
-    runGame()
-
-        
+    x = input('enter robot')
+    runGame([x,'human'])
